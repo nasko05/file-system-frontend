@@ -41,6 +41,9 @@ const uploadFile = async (username: string, path: string, file: File) => {
         }
     );
 
+    console.log(result.status);
+    console.log(result.statusText);
+
     if(result.status === 401) {
         throw new Error("Unauthorized");
     } else if (result.status !== 200) {
