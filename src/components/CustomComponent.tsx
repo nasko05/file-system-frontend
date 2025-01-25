@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {SyntheticEvent, useEffect, useState} from "react";
 import {
     AppBar,
     Toolbar,
@@ -9,7 +9,7 @@ import {
     Card,
     Container,
     Grid,
-    TextField,
+    TextField, Snackbar, Alert, AlertColor, SnackbarCloseReason,
 } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -25,6 +25,9 @@ export default function GoogleDriveApp() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [open, setOpen] = useState(false);
+    const [snackMessage, setMessage] = useState<string>("");
+    const [severity, setSeverity] = useState<AlertColor>("success");
 
     const [rootStructure, setRootStructure] = useState<DriveStructure | null>(null);
     // We'll track our current location in the drive (could be root, or some subdirectory)
@@ -33,6 +36,17 @@ export default function GoogleDriveApp() {
     // A stack of folder names for navigation
     const [pathStack, setPathStack] = useState<string[]>([]);
 
+    const handleClose = (
+        _event?: SyntheticEvent | Event,
+        reason?: SnackbarCloseReason,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
+
     const handleLogin = () => {
         check_credentials(
             {
@@ -40,11 +54,18 @@ export default function GoogleDriveApp() {
                 password: password
             }
         )
-            .then(() => setLoggedIn(true))
+            .then(() => {
+                setLoggedIn(true)
+                setOpen(true);
+                setMessage("Successfully logged in!");
+                setSeverity("success");
+            })
             .catch(err => {
                 console.error(err);
                 setLoggedIn(false);
-                // TODO: Add snack notification
+                setOpen(true);
+                setMessage("No such user!");
+                setSeverity("error");
             });
     };
 
@@ -148,6 +169,20 @@ export default function GoogleDriveApp() {
                         Sign In
                     </Button>
                 </Card>
+                <Snackbar
+                    open={open}
+                    autoHideDuration={6000}
+                    onClose={handleClose}
+                >
+                    <Alert
+                        severity={severity}
+                        variant="filled"
+                        sx={{ width: '100%' }}
+                        onClose={handleClose}
+                    >
+                        {snackMessage}
+                    </Alert>
+                </Snackbar>
             </Box>
         );
     }
