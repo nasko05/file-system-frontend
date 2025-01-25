@@ -29,6 +29,7 @@ export default function GoogleDriveApp() {
     const [open, setOpen] = useState(false);
     const [snackMessage, setMessage] = useState<string>("");
     const [severity, setSeverity] = useState<AlertColor>("success");
+    const [uploadFinishedFlag, setUploadFinishedFlag] = useState(false);
 
     const [rootStructure, setRootStructure] = useState<DriveStructure | null>(null);
     // We'll track our current location in the drive (could be root, or some subdirectory)
@@ -80,7 +81,6 @@ export default function GoogleDriveApp() {
         localStorage.removeItem("bearerToken")
     };
 
-    // Mock drive fetch after login
     useEffect(() => {
         if (!loggedIn) return;
 
@@ -95,7 +95,7 @@ export default function GoogleDriveApp() {
             .catch((err) => {
                 console.error(err);
             });
-    }, [loggedIn]);
+    }, [loggedIn, uploadFinishedFlag]);
 
     const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault(); // Prevent the default browser behavior
@@ -115,6 +115,7 @@ export default function GoogleDriveApp() {
                         setOpen(true);
                         setMessage(`File "${file.name}" uploaded successfully!`);
                         setSeverity("success");
+
                     })
                     .catch((err) => {
                         console.error(err);
@@ -123,6 +124,7 @@ export default function GoogleDriveApp() {
                         setSeverity("error");
                     });
             }
+            setUploadFinishedFlag(!uploadFinishedFlag);
         }
     };
 
