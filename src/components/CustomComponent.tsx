@@ -1,9 +1,6 @@
 import {SyntheticEvent, useEffect, useState} from "react";
 import {
-    AppBar,
-    Toolbar,
     Typography,
-    IconButton,
     Box,
     Button,
     Card,
@@ -11,11 +8,13 @@ import {
     Grid,
     TextField, Snackbar, Alert, AlertColor, SnackbarCloseReason,
 } from "@mui/material";
-import FolderIcon from "@mui/icons-material/Folder";
-import DescriptionIcon from "@mui/icons-material/Description";
 import DriveStructure from "../models/DriveStructure";
 import {check_credentials} from "../logic/login.ts";
 import {fetchDriveStructure, uploadFile} from "../logic/structure_requests.ts";
+import AppToolBar from "./AppToolBar.tsx";
+import FileCard from "./itemCards/FileCard.tsx";
+import DirectoryCard from "./itemCards/DirectoryCard.tsx";
+import NavigationBar from "./NavigationBar.tsx";
 
 // Helper function to find a subdirectory by name
 function findSubdirectory(current: DriveStructure, name: string): DriveStructure | null {
@@ -230,16 +229,7 @@ export default function GoogleDriveApp() {
             onDragOver={handleDragOver}
             onDrop={handleDrop}
         >
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                        My Drive
-                    </Typography>
-                    <IconButton color="inherit" onClick={handleLogout}>
-                        <Typography>Logout</Typography>
-                    </IconButton>
-                </Toolbar>
-            </AppBar>
+            <AppToolBar handleLogout={handleLogout} />
 
             <Box sx={{ flex: 1, overflowY: "auto", bgcolor: "#fafafa", py: 3 }}>
                 <Container
@@ -257,74 +247,17 @@ export default function GoogleDriveApp() {
                     ) : (
                         <>
                             {/* Navigation Bar */}
-                            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                                <Typography variant="h5" fontWeight="bold">
-                                    {pathStack.length === 0
-                                        ? `Welcome, ${currentStructure.name}`
-                                        : currentStructure.name}
-                                </Typography>
-                                {pathStack.length > 0 && (
-                                    <Button variant="outlined" onClick={goBack}>
-                                        Back
-                                    </Button>
-                                )}
-                            </Box>
+                            <NavigationBar pathStack={pathStack} currentStructure={currentStructure} goBack={goBack}/>
 
                             <Grid container spacing={3}>
                                 {/* Sub-directories */}
                                 {currentStructure.dirs.map((directory) => (
-                                    <Grid item xs={12} sm={6} md={4} key={directory.name}>
-                                        <Card
-                                            variant="outlined"
-                                            sx={{
-                                                height: 150,
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                borderRadius: 3,
-                                                boxShadow: 1,
-                                                cursor: "pointer",
-                                                transition: "transform 0.2s",
-                                                "&:hover": {
-                                                    transform: "scale(1.03)",
-                                                    boxShadow: 4,
-                                                },
-                                            }}
-                                            onClick={() => openFolder(directory.name)}
-                                        >
-                                            <FolderIcon sx={{ fontSize: 36, color: "#1976d2" }} />
-                                            <Typography mt={1} fontWeight="medium">
-                                                {directory.name}
-                                            </Typography>
-                                        </Card>
-                                    </Grid>
+                                    <DirectoryCard directory={directory} openFolder={openFolder}/>
                                 ))}
 
                                 {/* Files */}
                                 {currentStructure.files.map((file) => (
-                                    <Grid item xs={12} sm={6} md={4} key={file}>
-                                        <Card
-                                            variant="outlined"
-                                            sx={{
-                                                height: 150,
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                borderRadius: 3,
-                                                boxShadow: 1,
-                                                transition: "transform 0.2s",
-                                                "&:hover": {
-                                                    transform: "scale(1.03)",
-                                                    boxShadow: 4,
-                                                },
-                                            }}
-                                        >
-                                            <DescriptionIcon sx={{ fontSize: 36, color: "#888" }} />
-                                            <Typography mt={1}>{file}</Typography>
-                                        </Card>
-                                    </Grid>
+                                    <FileCard file={file}/>
                                 ))}
                             </Grid>
                         </>
