@@ -60,17 +60,24 @@ async function downloadFile(path: string, filename: string, userId: string): Pro
         const encodedFilename = encodeURIComponent(filename);
 
         // Make the GET request to the endpoint
-        const response = await axiosInstance.get(`/api/download/${userId}`, {
-            params: {
-                path: encodedPath,
+        const response = await axiosInstance.post('/api/download/',
+            {
+                username: userId,
+                path_to_file: encodedPath,
                 filename: encodedFilename,
             },
-            responseType: "blob",
-            headers: {
-                Authorization: `Bearer ${bearerToken}`,
-                    "Content-Type": "multipart/form-data", // Set the correct content type for file uploads
-            },
-        });
+            {
+                params: {
+                    path: encodedPath,
+                    filename: encodedFilename,
+                },
+                responseType: "blob",
+                headers: {
+                    Authorization: `Bearer ${bearerToken}`,
+                        "Content-Type": "multipart/form-data", // Set the correct content type for file uploads
+                },
+            }
+        );
 
         console.log(response)
 
