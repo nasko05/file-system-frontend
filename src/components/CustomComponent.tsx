@@ -14,6 +14,7 @@ import {
 import FolderIcon from "@mui/icons-material/Folder";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DriveStructure from "../models/DriveStructure";
+import {check_credentials} from "../logic/login.ts";
 
 // Helper function to find a subdirectory by name
 function findSubdirectory(current: DriveStructure, name: string): DriveStructure | null {
@@ -33,11 +34,18 @@ export default function GoogleDriveApp() {
     const [pathStack, setPathStack] = useState<string[]>([]);
 
     const handleLogin = () => {
-        if (username === "user" && password === "password") {
-            setLoggedIn(true);
-        } else {
-            alert("Invalid credentials");
-        }
+        check_credentials(
+            {
+                username: username,
+                password: password
+            }
+        )
+            .then(() => setLoggedIn(true))
+            .catch(err => {
+                console.error(err);
+                setLoggedIn(false);
+                // TODO: Add snack notification
+            });
     };
 
     const handleLogout = () => {
