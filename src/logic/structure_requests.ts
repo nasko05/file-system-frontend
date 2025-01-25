@@ -27,11 +27,11 @@ const uploadFile = async (username: string, path: string, file: File) => {
 
     // Use FormData to properly encode the file and path
     const formData = new FormData();
-    formData.append("file", file);
     formData.append("path", path);
+    formData.append("file", file);
 
     const result = await axiosInstance.post(
-        `/api/file/upload/${username}`,
+        `/api/upload/${username}`,
         formData, // Send the FormData object
         {
             headers: {

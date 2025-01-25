@@ -36,7 +36,7 @@ export default function GoogleDriveApp() {
 
     // A stack of folder names for navigation
     const [pathStack, setPathStack] = useState<string[]>([]);
-    const [currentPath, setCurrentPath] = useState<string>("/");
+    const [currentPath, setCurrentPath] = useState<string>("");
 
     const handleClose = (
         _event?: SyntheticEvent | Event,
