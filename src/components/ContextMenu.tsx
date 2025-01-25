@@ -1,11 +1,14 @@
 import {Menu, MenuItem} from "@mui/material";
 import React from "react";
+import {downloadFile} from "../logic/structure_requests.ts";
 
 type ContextMenuProps = {
     selectedItem: string | null;
     setSelectedItem: React.Dispatch<React.SetStateAction<string | null>>;
     contextMenu: { mouseX: number; mouseY: number } | null;
     setContextMenu: React.Dispatch<React.SetStateAction<{ mouseX: number; mouseY: number } | null>>;
+    userId: string; // User ID for the API request
+    currentPath: string; // Current directory path
 }
 
 export default function ContextMenu(props: ContextMenuProps) {
@@ -30,7 +33,9 @@ export default function ContextMenu(props: ContextMenuProps) {
     const handleDownload = () => {
         // Implement download logic
         console.log(`Download ${props.selectedItem}`);
-        handleCloseContextMenu();
+        downloadFile(props.selectedItem!, props.currentPath, props.userId).then(
+            () => handleCloseContextMenu()
+        ).catch(console.error);
     };
 
     return (

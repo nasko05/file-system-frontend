@@ -275,7 +275,14 @@ export default function GoogleDriveApp() {
                         </>
                     )}
                 </Container>
-                <ContextMenu selectedItem={selectedItem} setSelectedItem={setSelectedItem} contextMenu={contextMenu} setContextMenu={setContextMenu} />
+                <ContextMenu
+                    selectedItem={selectedItem}
+                    setSelectedItem={setSelectedItem}
+                    contextMenu={contextMenu}
+                    setContextMenu={setContextMenu}
+                    currentPath={currentPath}
+                    userId={username}
+                />
             </Box>
         </Box>
     );

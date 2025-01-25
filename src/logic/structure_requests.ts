@@ -51,4 +51,40 @@ const uploadFile = async (username: string, path: string, file: File) => {
     }
 };
 
-export {fetchDriveStructure, uploadFile};
+async function downloadFile(path: string, filename: string, userId: string): Promise<void> {
+    try {
+        // URL-encode the query parameters to ensure they are valid
+        const encodedPath = encodeURIComponent(path);
+        const encodedFilename = encodeURIComponent(filename);
+
+        // Make the GET request to the endpoint
+        const response = await axiosInstance.get(`/api/download/${userId}`, {
+            params: {
+                path: encodedPath,
+                filename: encodedFilename,
+            },
+            responseType: "blob", // Expect binary data
+        });
+
+        // Create a download link and trigger the download
+        const blob = new Blob([response.data]);
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename; // Suggest the original filename
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url); // Clean up the URL object
+    } catch (error: any) {
+        if (error.response) {
+            // Handle HTTP errors
+            console.error(`Error ${error.response.status}: ${error.response.data}`);
+        } else {
+            // Handle network or other errors
+            console.error(`Error: ${error.message}`);
+        }
+    }
+}
+
+export {fetchDriveStructure, uploadFile, downloadFile};
