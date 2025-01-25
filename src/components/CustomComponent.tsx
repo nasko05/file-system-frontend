@@ -112,7 +112,7 @@ export default function GoogleDriveApp() {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 // Call the uploadFile method (assuming it exists)
-                uploadFile(username, `${currentPath}/${file.name}`, file)
+                uploadFile(username, `${currentPath}`, file)
                     .then(() => {
                         setOpen(true);
                         setMessage(`File "${file.name}" uploaded successfully!`);
