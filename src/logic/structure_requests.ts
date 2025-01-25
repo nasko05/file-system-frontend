@@ -13,11 +13,39 @@ const fetchDriveStructure = async (username: string) => {
     console.log(result.status);
     console.log(result.statusText);
 
-    if (result.status !== 200) {
+    if(result.status === 401) {
+        throw new Error("Unauthorized");
+    } else if (result.status !== 200) {
         throw new Error("Login request failed!\nReturn code is " + result.statusText + "\n Error message: " + result.statusText);
     }
 
     return result.data;
 }
 
-export {fetchDriveStructure};
+const uploadFile = async (username: string, path: string, file: File) => {
+    const bearerToken = localStorage.getItem("bearerToken");
+
+    // Use FormData to properly encode the file and path
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("path", path);
+
+    const result = await axiosInstance.post(
+        `/api/file/upload/${username}`,
+        formData, // Send the FormData object
+        {
+            headers: {
+                Authorization: `Bearer ${bearerToken}`,
+                "Content-Type": "multipart/form-data", // Set the correct content type for file uploads
+            },
+        }
+    );
+
+    if(result.status === 401) {
+        throw new Error("Unauthorized");
+    } else if (result.status !== 200) {
+        throw new Error("Login request failed!\nReturn code is " + result.statusText + "\n Error message: " + result.statusText);
+    }
+};
+
+export {fetchDriveStructure, uploadFile};

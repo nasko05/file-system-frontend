@@ -15,7 +15,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DriveStructure from "../models/DriveStructure";
 import {check_credentials} from "../logic/login.ts";
-import {fetchDriveStructure} from "../logic/structure_requests.ts";
+import {fetchDriveStructure, uploadFile} from "../logic/structure_requests.ts";
 
 // Helper function to find a subdirectory by name
 function findSubdirectory(current: DriveStructure, name: string): DriveStructure | null {
@@ -36,6 +36,7 @@ export default function GoogleDriveApp() {
 
     // A stack of folder names for navigation
     const [pathStack, setPathStack] = useState<string[]>([]);
+    const [currentPath, setCurrentPath] = useState<string>("/");
 
     const handleClose = (
         _event?: SyntheticEvent | Event,
@@ -75,6 +76,7 @@ export default function GoogleDriveApp() {
         setRootStructure(null);
         setCurrentStructure(null);
         setPathStack([]);
+        setCurrentPath("/")
         localStorage.removeItem("bearerToken")
     };
 
@@ -95,6 +97,35 @@ export default function GoogleDriveApp() {
             });
     }, [loggedIn]);
 
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault(); // Prevent the default browser behavior
+    };
+
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        if (!loggedIn) return;
+
+        const files = event.dataTransfer.files;
+        if (files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                // Call the uploadFile method (assuming it exists)
+                uploadFile(username, `${currentPath}/${file.name}`, file)
+                    .then(() => {
+                        setOpen(true);
+                        setMessage(`File "${file.name}" uploaded successfully!`);
+                        setSeverity("success");
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        setOpen(true);
+                        setMessage(`Failed to upload "${file.name}".`);
+                        setSeverity("error");
+                    });
+            }
+        }
+    };
+
     // Handler for clicking a folder card
     const openFolder = (folderName: string) => {
         if (!currentStructure) return;
@@ -104,6 +135,7 @@ export default function GoogleDriveApp() {
             // Push folder name to path stack for back navigation
             setPathStack((prev) => [...prev, subDir.name]);
             setCurrentStructure(subDir);
+            setCurrentPath((prev) => `${prev}/${subDir.name}`);
         }
     };
 
@@ -121,6 +153,7 @@ export default function GoogleDriveApp() {
         }
         setCurrentStructure(current);
         setPathStack(newStack);
+        setCurrentPath(newStack.join("/") || "/");
     };
 
     if (!loggedIn) {
@@ -183,14 +216,18 @@ export default function GoogleDriveApp() {
     }
 
     return (
-        <Box sx={{
-            width: "md",
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            margin: 0, // Ensure no margin
-            padding: 0, // Ensure no padding
-        }}>
+        <Box
+            sx={{
+                width: "md",
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                margin: 0, // Ensure no margin
+                padding: 0, // Ensure no padding
+            }}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+        >
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -210,7 +247,6 @@ export default function GoogleDriveApp() {
                         p: 3,
                         borderRadius: 3,
                         boxShadow: 2,
-                        // Center the container horizontally
                         marginX: "auto",
                     }}
                 >
