@@ -1,4 +1,5 @@
 import {axiosInstance} from "./clientSetup.ts";
+import {AxiosError} from "axios";
 
 const fetchDriveStructure = async (username: string) => {
     const bearerToken = localStorage.getItem("bearerToken");
@@ -53,6 +54,7 @@ const uploadFile = async (username: string, path: string, file: File) => {
 
 async function downloadFile(path: string, filename: string, userId: string): Promise<void> {
     try {
+        const bearerToken = localStorage.getItem("bearerToken");
         // URL-encode the query parameters to ensure they are valid
         const encodedPath = encodeURIComponent(path);
         const encodedFilename = encodeURIComponent(filename);
@@ -63,26 +65,41 @@ async function downloadFile(path: string, filename: string, userId: string): Pro
                 path: encodedPath,
                 filename: encodedFilename,
             },
-            responseType: "blob", // Expect binary data
+            responseType: "blob",
+            headers: {
+                Authorization: `Bearer ${bearerToken}`,
+                    "Content-Type": "multipart/form-data", // Set the correct content type for file uploads
+            },
         });
 
-        // Create a download link and trigger the download
+        console.log(response)
+
+        // Trigger download using FileSaver.js or manually
         const blob = new Blob([response.data]);
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename; // Suggest the original filename
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url); // Clean up the URL object
-    } catch (error: any) {
-        if (error.response) {
-            // Handle HTTP errors
-            console.error(`Error ${error.response.status}: ${error.response.data}`);
-        } else {
-            // Handle network or other errors
+
+        // Create a temporary anchor element to trigger the download
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", filename); // The downloaded file's name
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup: Remove the anchor and revoke the URL
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+            // Handle Axios-specific HTTP errors
+            console.error(
+                `Error ${error.response.status}: ${error.response.data}`
+            );
+        } else if (error instanceof Error) {
+            // Handle other types of errors
             console.error(`Error: ${error.message}`);
+        } else {
+            // Handle unknown error types
+            console.error("An unknown error occurred");
         }
     }
 }

@@ -33,7 +33,7 @@ export default function ContextMenu(props: ContextMenuProps) {
     const handleDownload = () => {
         // Implement download logic
         console.log(`Download ${props.selectedItem}`);
-        downloadFile(props.selectedItem!, props.currentPath, props.userId).then(
+        downloadFile(props.currentPath, props.selectedItem!, props.userId).then(
             () => handleCloseContextMenu()
         ).catch(console.error);
     };
