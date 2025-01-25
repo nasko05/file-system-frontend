@@ -1,4 +1,4 @@
-import {SyntheticEvent, useEffect, useState} from "react";
+import React, {SyntheticEvent, useEffect, useState} from "react";
 import {
     Typography,
     Box,
@@ -15,6 +15,7 @@ import AppToolBar from "./AppToolBar.tsx";
 import FileCard from "./itemCards/FileCard.tsx";
 import DirectoryCard from "./itemCards/DirectoryCard.tsx";
 import NavigationBar from "./NavigationBar.tsx";
+import ContextMenu from "./ContextMenu.tsx";
 
 // Helper function to find a subdirectory by name
 function findSubdirectory(current: DriveStructure, name: string): DriveStructure | null {
@@ -37,6 +38,8 @@ export default function GoogleDriveApp() {
     // A stack of folder names for navigation
     const [pathStack, setPathStack] = useState<string[]>([]);
     const [currentPath, setCurrentPath] = useState<string>("");
+    const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null);
+    const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
     const handleClose = (
         _event?: SyntheticEvent | Event,
@@ -157,6 +160,15 @@ export default function GoogleDriveApp() {
         setCurrentPath(newStack.join("/") || "/");
     };
 
+    const handleContextMenu = (event: React.MouseEvent, itemName: string) => {
+        event.preventDefault(); // Prevent the default right-click menu
+        setSelectedItem(itemName);
+        setContextMenu({
+            mouseX: event.clientX - 2,
+            mouseY: event.clientY - 4,
+        });
+    };
+
     if (!loggedIn) {
         return (
             <Box
@@ -252,17 +264,18 @@ export default function GoogleDriveApp() {
                             <Grid container spacing={3}>
                                 {/* Sub-directories */}
                                 {currentStructure.dirs.map((directory) => (
-                                    <DirectoryCard directory={directory} openFolder={openFolder}/>
+                                    <DirectoryCard directory={directory} openFolder={openFolder} handleContextMenu={handleContextMenu}/>
                                 ))}
 
                                 {/* Files */}
                                 {currentStructure.files.map((file) => (
-                                    <FileCard file={file}/>
+                                    <FileCard file={file} handleContextMenu={handleContextMenu}/>
                                 ))}
                             </Grid>
                         </>
                     )}
                 </Container>
+                <ContextMenu selectedItem={selectedItem} setSelectedItem={setSelectedItem} contextMenu={contextMenu} setContextMenu={setContextMenu} />
             </Box>
         </Box>
     );

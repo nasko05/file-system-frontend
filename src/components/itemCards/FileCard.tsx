@@ -1,11 +1,13 @@
 import {Card, Grid, Typography} from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
+import React from "react";
 
 type FileCardProps = {
     file: string;
+    handleContextMenu: (event: React.MouseEvent, itemName: string) => void;
 }
 
-export default function FileCard({file}: FileCardProps) {
+export default function FileCard({ file, handleContextMenu }: FileCardProps) {
     return (
         <Grid item xs={12} sm={6} md={4} key={file}>
             <Card
@@ -24,6 +26,7 @@ export default function FileCard({file}: FileCardProps) {
                         boxShadow: 4,
                     },
                 }}
+                onContextMenu={(e) => handleContextMenu(e, file)}
             >
                 <DescriptionIcon sx={{ fontSize: 36, color: "#888" }} />
                 <Typography mt={1}>{file}</Typography>

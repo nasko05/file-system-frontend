@@ -1,13 +1,15 @@
 import {Card, Grid, Typography} from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import DriveStructure from "../../models/DriveStructure";
+import React from "react";
 
 type DirectoryCardProps = {
     directory: DriveStructure;
     openFolder: (folderName: string) => void;
+    handleContextMenu: (event: React.MouseEvent, itemName: string) => void;
 }
 
-export default function DirectoryCard({ directory, openFolder }: DirectoryCardProps) {
+export default function DirectoryCard({ directory, openFolder, handleContextMenu }: DirectoryCardProps) {
     return (
         <Grid item xs={12} sm={6} md={4} key={directory.name}>
         <Card
@@ -27,6 +29,7 @@ export default function DirectoryCard({ directory, openFolder }: DirectoryCardPr
                     boxShadow: 4,
                 },
             }}
+            onContextMenu={(e) => handleContextMenu(e, directory.name)}
             onClick={() => openFolder(directory.name)}
         >
             <FolderIcon sx={{ fontSize: 36, color: "#1976d2" }} />
