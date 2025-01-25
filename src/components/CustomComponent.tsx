@@ -15,6 +15,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DriveStructure from "../models/DriveStructure";
 import {check_credentials} from "../logic/login.ts";
+import {fetchDriveStructure} from "../logic/structure_requests.ts";
 
 // Helper function to find a subdirectory by name
 function findSubdirectory(current: DriveStructure, name: string): DriveStructure | null {
@@ -56,9 +57,7 @@ export default function GoogleDriveApp() {
         )
             .then(() => {
                 setLoggedIn(true)
-                setOpen(true);
-                setMessage("Successfully logged in!");
-                setSeverity("success");
+                localStorage.setItem("username", username);
             })
             .catch(err => {
                 console.error(err);
@@ -76,28 +75,24 @@ export default function GoogleDriveApp() {
         setRootStructure(null);
         setCurrentStructure(null);
         setPathStack([]);
+        localStorage.removeItem("bearerToken")
     };
 
     // Mock drive fetch after login
     useEffect(() => {
         if (!loggedIn) return;
 
-        // Simulate async fetch
-        setTimeout(() => {
-            const mockRoot: DriveStructure = {
-                name: "adonev",
-                files: ["n.png", "document.pdf"],
-                dirs: [
-                    {
-                        name: "test",
-                        files: ["test.txt", "test2.txt"],
-                        dirs: [],
-                    },
-                ],
-            };
-            setRootStructure(mockRoot);
-            setCurrentStructure(mockRoot);
-        }, 800);
+        const user = localStorage.getItem("username");
+        if(!user) throw new Error("Could not retrieve user from local storage!");
+        fetchDriveStructure(user)
+            .then((r) => {
+                const resultJson = r.json() as DriveStructure;
+                setRootStructure(resultJson);
+                setCurrentStructure(resultJson);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     }, [loggedIn]);
 
     // Handler for clicking a folder card

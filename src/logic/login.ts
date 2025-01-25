@@ -1,10 +1,6 @@
 import Credentials from "../models/Credential";
-import axios from "axios";
+import {axiosInstance} from "./clientSetup.ts";
 
-// Set config defaults when creating the instance
-const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_SERVER_URL,
-});
 
 export const check_credentials = async (credentials: Credentials) => {
     console.log('Base URL:', import.meta.env.VITE_SERVER_URL);
