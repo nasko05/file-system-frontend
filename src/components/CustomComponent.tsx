@@ -183,7 +183,14 @@ export default function GoogleDriveApp() {
     }
 
     return (
-        <Box sx={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column" }}>
+        <Box sx={{
+            width: "md",
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            margin: 0, // Ensure no margin
+            padding: 0, // Ensure no padding
+        }}>
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>

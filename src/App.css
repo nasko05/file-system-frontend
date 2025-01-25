@@ -1,7 +1,18 @@
+/* Global reset */
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure your root element fills the screen */
 #root {
-  max-width: 1280px;
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
 }
 
