@@ -55,26 +55,19 @@ const uploadFile = async (username: string, path: string, file: File) => {
 async function downloadFile(path: string, filename: string, userId: string): Promise<void> {
     try {
         const bearerToken = localStorage.getItem("bearerToken");
-        // URL-encode the query parameters to ensure they are valid
-        const encodedPath = encodeURIComponent(path);
-        const encodedFilename = encodeURIComponent(filename);
 
         // Make the GET request to the endpoint
-        const response = await axiosInstance.post('/api/download/',
+        const response = await axiosInstance.post('/api/download',
             {
                 username: userId,
-                path_to_file: encodedPath,
-                filename: encodedFilename,
+                path: path,
+                filename: filename,
             },
             {
-                params: {
-                    path: encodedPath,
-                    filename: encodedFilename,
-                },
                 responseType: "blob",
                 headers: {
                     Authorization: `Bearer ${bearerToken}`,
-                        "Content-Type": "multipart/form-data", // Set the correct content type for file uploads
+                        "Content-Type": "application/json", // Set the correct content type for file uploads
                 },
             }
         );
