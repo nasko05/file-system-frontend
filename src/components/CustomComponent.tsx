@@ -86,7 +86,7 @@ export default function GoogleDriveApp() {
         if(!user) throw new Error("Could not retrieve user from local storage!");
         fetchDriveStructure(user)
             .then((r) => {
-                const resultJson = r.json() as DriveStructure;
+                const resultJson = r as DriveStructure;
                 setRootStructure(resultJson);
                 setCurrentStructure(resultJson);
             })
