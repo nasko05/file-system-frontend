@@ -245,7 +245,11 @@ export default function GoogleDriveApp() {
                     handleOpen={ () => setRenamePopupOpen(true)}
                     handleSubmit={(new_name: string) =>
                         renameFile(currentPath, selectedItem!, new_name)
-                            .then(() => setRenamePopupOpen(false))
+                            .then(() => {
+                                setRenamePopupOpen(false);
+                                setContextMenu(null);
+                                setSelectedItem(null);
+                            })
                             .catch(console.error)
                     }
                     focusedFile={selectedItem!}

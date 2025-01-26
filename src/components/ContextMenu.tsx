@@ -23,7 +23,6 @@ export default function ContextMenu(props: ContextMenuProps) {
         // Implement rename logic
         console.log(`Rename ${props.selectedItem}`);
         props.setRenamePopupOpen(true);
-        handleCloseContextMenu();
     };
 
     const handleDelete = () => {
