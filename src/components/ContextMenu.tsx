@@ -5,6 +5,8 @@ import {deleteFile, downloadFile} from "../logic/structure_requests.ts";
 type ContextMenuProps = {
     selectedItem: string | null;
     setSelectedItem: React.Dispatch<React.SetStateAction<string | null>>;
+    uploadFinishedFlag: boolean;
+    setUploadFinishedFlag: React.Dispatch<React.SetStateAction<boolean>>;
     contextMenu: { mouseX: number; mouseY: number } | null;
     setContextMenu: React.Dispatch<React.SetStateAction<{ mouseX: number; mouseY: number } | null>>;
     userId: string; // User ID for the API request
@@ -29,7 +31,10 @@ export default function ContextMenu(props: ContextMenuProps) {
         // Implement delete logic
         console.log(`Delete ${props.selectedItem}`);
         deleteFile(props.selectedItem!, props.currentPath)
-            .then(() => handleCloseContextMenu())
+            .then(() => {
+                handleCloseContextMenu()
+                props.setUploadFinishedFlag(!props.uploadFinishedFlag);
+            })
             .catch(console.error);
     };
 
@@ -37,7 +42,10 @@ export default function ContextMenu(props: ContextMenuProps) {
         // Implement download logic
         console.log(`Download ${props.selectedItem}`);
         downloadFile(props.currentPath, props.selectedItem!).then(
-            () => handleCloseContextMenu()
+            () => {
+                handleCloseContextMenu();
+                props.setUploadFinishedFlag(!props.uploadFinishedFlag);
+            }
         ).catch(console.error);
     };
 

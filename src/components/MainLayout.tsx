@@ -238,6 +238,8 @@ export default function GoogleDriveApp() {
                     currentPath={currentPath}
                     userId={username}
                     setRenamePopupOpen={setRenamePopupOpen}
+                    uploadFinishedFlag={uploadFinishedFlag}
+                    setUploadFinishedFlag={setUploadFinishedFlag}
                 />
                 <SimplePopup
                     open={renamePopupOpen}
@@ -249,6 +251,7 @@ export default function GoogleDriveApp() {
                                 setRenamePopupOpen(false);
                                 setContextMenu(null);
                                 setSelectedItem(null);
+                                setUploadFinishedFlag(!uploadFinishedFlag);
                             })
                             .catch(console.error)
                     }
