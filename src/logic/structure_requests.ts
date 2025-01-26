@@ -126,4 +126,32 @@ const deleteFile = async (path: string, name: string): Promise<void> => {
     }
 }
 
-export {fetchDriveStructure, uploadFile, downloadFile, deleteFile};
+const renameFile = async (
+    path: string,
+    old_name: string,
+    new_name: string
+): Promise<void> => {
+    const bearerToken = localStorage.getItem("bearerToken");
+
+    const payload = {
+        path: path,
+        old_name: old_name,
+        new_name: new_name,
+    }
+
+    const result = await axiosInstance.post('/api/directory/rename',
+        payload,
+        {
+            headers: { Authorization: `Bearer ${bearerToken}` },
+        });
+
+    console.log(result.status);
+
+    if(result.status === 401) {
+        throw new Error("Unauthorized");
+    } else if (result.status !== 200) {
+        throw new Error("Could not rename file!");
+    }
+}
+
+export {fetchDriveStructure, uploadFile, downloadFile, deleteFile, renameFile};

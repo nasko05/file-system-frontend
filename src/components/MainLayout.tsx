@@ -2,21 +2,20 @@ import React, {SyntheticEvent, useEffect, useState} from "react";
 import {
     Typography,
     Box,
-    Button,
-    Card,
     Container,
     Grid,
-    TextField, Snackbar, Alert, AlertColor, SnackbarCloseReason,
+    AlertColor, SnackbarCloseReason,
 } from "@mui/material";
 import DriveStructure from "../models/DriveStructure";
 import {check_credentials} from "../logic/login.ts";
-import {fetchDriveStructure, uploadFile} from "../logic/structure_requests.ts";
+import {fetchDriveStructure, renameFile, uploadFile} from "../logic/structure_requests.ts";
 import AppToolBar from "./toolBars/AppToolBar.tsx";
 import FileCard from "./itemCards/FileCard.tsx";
 import DirectoryCard from "./itemCards/DirectoryCard.tsx";
 import NavigationBar from "./toolBars/NavigationBar.tsx";
 import ContextMenu from "./ContextMenu.tsx";
 import SimplePopup from "./RenamePopup.tsx";
+import LogInForm from "./LogInForm.tsx";
 
 // Helper function to find a subdirectory by name
 function findSubdirectory(current: DriveStructure, name: string): DriveStructure | null {
@@ -172,62 +171,16 @@ export default function GoogleDriveApp() {
     };
 
     if (!loggedIn) {
-        return (
-            <Box
-                sx={{
-                    width: "100vw",
-                    height: "100vh",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    bgcolor: "#f5f5f5",
-                }}
-            >
-                <Card sx={{ width: 400, p: 3, borderRadius: 3, boxShadow: 3 }}>
-                    <Typography variant="h5" mb={2} fontWeight="bold">
-                        Login
-                    </Typography>
-                    <TextField
-                        label="Username"
-                        fullWidth
-                        margin="normal"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        fullWidth
-                        margin="normal"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        sx={{ mt: 2, borderRadius: 2 }}
-                        onClick={handleLogin}
-                    >
-                        Sign In
-                    </Button>
-                </Card>
-                <Snackbar
-                    open={open}
-                    autoHideDuration={6000}
-                    onClose={handleClose}
-                >
-                    <Alert
-                        severity={severity}
-                        variant="filled"
-                        sx={{ width: '100%' }}
-                        onClose={handleClose}
-                    >
-                        {snackMessage}
-                    </Alert>
-                </Snackbar>
-            </Box>
-        );
+        return <LogInForm
+            username={username}
+            setUsername={setUsername}
+            password={password}
+            setPassword={setPassword}
+            open={open}
+            handleLogin={handleLogin}
+            handleClose={handleClose}
+            snackMessage={snackMessage}
+            severity={severity}/>;
     }
 
     return (
@@ -289,8 +242,13 @@ export default function GoogleDriveApp() {
                 <SimplePopup
                     open={renamePopupOpen}
                     handleClose={() => setRenamePopupOpen(false)}
-                    handleOpen={() => setRenamePopupOpen(true)}
-                    handleSubmit={() => /*TODO: Handle rename request*/ setRenamePopupOpen(false)}
+                    handleOpen={ () => setRenamePopupOpen(true)}
+                    handleSubmit={(new_name: string) =>
+                        renameFile(currentPath, selectedItem!, new_name)
+                            .then(() => setRenamePopupOpen(false))
+                            .catch(console.error)
+                    }
+                    focusedFile={selectedItem!}
                 />
             </Box>
         </Box>
