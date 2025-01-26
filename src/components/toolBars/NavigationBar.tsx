@@ -1,5 +1,5 @@
 import {Box, Button, Typography} from "@mui/material";
-import DriveStructure from "../models/DriveStructure";
+import DriveStructure from "../../models/DriveStructure";
 
 type NavigationBarProps = {
     pathStack: string[];

@@ -17,19 +17,18 @@ const fetchDriveStructure = async (username: string) => {
     if(result.status === 401) {
         throw new Error("Unauthorized");
     } else if (result.status !== 200) {
-        throw new Error("Login request failed!\nReturn code is " + result.statusText + "\n Error message: " + result.statusText);
+        throw new Error("Fetching drive structure failed!\nReturn code is " + result.statusText + "\n Error message: " + result.statusText);
     }
 
     return result.data;
 }
 
-const uploadFile = async (username: string, path: string, file: File) => {
+const uploadFile = async (path: string, file: File) => {
     const bearerToken = localStorage.getItem("bearerToken");
 
     // Use FormData to properly encode the file and path
     const formData = new FormData();
     formData.append("path", path);
-    formData.append("username", username);
     formData.append("file", file);
 
     const result = await axiosInstance.post(
@@ -49,18 +48,17 @@ const uploadFile = async (username: string, path: string, file: File) => {
     if(result.status === 401) {
         throw new Error("Unauthorized");
     } else if (result.status !== 200) {
-        throw new Error("Login request failed!\nReturn code is " + result.statusText + "\n Error message: " + result.statusText);
+        throw new Error("Uploading file failed!\nReturn code is " + result.statusText + "\n Error message: " + result.statusText);
     }
 };
 
-async function downloadFile(path: string, filename: string, userId: string): Promise<void> {
+async function downloadFile(path: string, filename: string): Promise<void> {
     try {
         const bearerToken = localStorage.getItem("bearerToken");
 
         // Make the GET request to the endpoint
         const response = await axiosInstance.post('/api/download',
             {
-                username: userId,
                 path: path,
                 filename: filename,
             },
@@ -105,4 +103,27 @@ async function downloadFile(path: string, filename: string, userId: string): Pro
     }
 }
 
-export {fetchDriveStructure, uploadFile, downloadFile};
+const deleteFile = async (path: string, name: string): Promise<void> => {
+    const bearerToken = localStorage.getItem("bearerToken");
+
+    const result = await axiosInstance.post(
+        `/api/file/delete`,
+        {
+            path: path,
+            name: name,
+        },
+        {
+            headers: { Authorization: `Bearer ${bearerToken}` },
+        }
+    );
+
+    console.log(result.status);
+
+    if(result.status === 401) {
+        throw new Error("Unauthorized");
+    } else if (result.status !== 200) {
+        throw new Error("Deleting file failed!\nReturn code is " + result.statusText + "\n Error message: " + result.statusText);
+    }
+}
+
+export {fetchDriveStructure, uploadFile, downloadFile, deleteFile};

@@ -11,11 +11,12 @@ import {
 import DriveStructure from "../models/DriveStructure";
 import {check_credentials} from "../logic/login.ts";
 import {fetchDriveStructure, uploadFile} from "../logic/structure_requests.ts";
-import AppToolBar from "./AppToolBar.tsx";
+import AppToolBar from "./toolBars/AppToolBar.tsx";
 import FileCard from "./itemCards/FileCard.tsx";
 import DirectoryCard from "./itemCards/DirectoryCard.tsx";
-import NavigationBar from "./NavigationBar.tsx";
+import NavigationBar from "./toolBars/NavigationBar.tsx";
 import ContextMenu from "./ContextMenu.tsx";
+import SimplePopup from "./RenamePopup.tsx";
 
 // Helper function to find a subdirectory by name
 function findSubdirectory(current: DriveStructure, name: string): DriveStructure | null {
@@ -40,6 +41,7 @@ export default function GoogleDriveApp() {
     const [currentPath, setCurrentPath] = useState<string>("");
     const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
+    const [renamePopupOpen, setRenamePopupOpen] = useState(false);
 
     const handleClose = (
         _event?: SyntheticEvent | Event,
@@ -112,7 +114,7 @@ export default function GoogleDriveApp() {
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 // Call the uploadFile method (assuming it exists)
-                uploadFile(username, `${currentPath}`, file)
+                uploadFile(`${currentPath}`, file)
                     .then(() => {
                         setOpen(true);
                         setMessage(`File "${file.name}" uploaded successfully!`);
@@ -282,6 +284,13 @@ export default function GoogleDriveApp() {
                     setContextMenu={setContextMenu}
                     currentPath={currentPath}
                     userId={username}
+                    setRenamePopupOpen={setRenamePopupOpen}
+                />
+                <SimplePopup
+                    open={renamePopupOpen}
+                    handleClose={() => setRenamePopupOpen(false)}
+                    handleOpen={() => setRenamePopupOpen(true)}
+                    handleSubmit={() => /*TODO: Handle rename request*/ setRenamePopupOpen(false)}
                 />
             </Box>
         </Box>

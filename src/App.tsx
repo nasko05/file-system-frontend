@@ -1,5 +1,5 @@
 import './App.css'
-import CustomComponent from "./components/CustomComponent.tsx";
+import CustomComponent from "./components/MainLayout.tsx";
 
 function App() {
 
