@@ -1,6 +1,6 @@
 import {Menu, MenuItem} from "@mui/material";
 import React from "react";
-import {deleteFile, downloadFile} from "../logic/structure_requests.ts";
+import {deleteDirectory, deleteFile, downloadFile} from "../logic/structure_requests.ts";
 
 type ContextMenuProps = {
     selectedItem: string | null;
@@ -23,6 +23,7 @@ export default function ContextMenu(props: ContextMenuProps) {
 
     const handleRename = () => {
         // Implement rename logic
+        props.setSelectedItem(props.selectedItem!.replace(":dir:", ""));
         console.log(`Rename ${props.selectedItem}`);
         props.setRenamePopupOpen(true);
     };
@@ -30,18 +31,27 @@ export default function ContextMenu(props: ContextMenuProps) {
     const handleDelete = () => {
         // Implement delete logic
         console.log(`Delete ${props.selectedItem}`);
-        deleteFile(props.selectedItem!, props.currentPath)
-            .then(() => {
-                handleCloseContextMenu()
-                props.setUploadFinishedFlag(!props.uploadFinishedFlag);
-            })
-            .catch(console.error);
+        if(props.selectedItem?.endsWith(":dir:")) {
+            deleteDirectory(props.currentPath, props.selectedItem!.replace(":dir:", ""))
+                .then(() => {
+                    handleCloseContextMenu()
+                    props.setUploadFinishedFlag(!props.uploadFinishedFlag);
+                })
+                .catch(console.error);
+        } else {
+            deleteFile(props.currentPath, props.selectedItem!)
+                .then(() => {
+                    handleCloseContextMenu()
+                    props.setUploadFinishedFlag(!props.uploadFinishedFlag);
+                })
+                .catch(console.error);
+        }
     };
 
     const handleDownload = () => {
         // Implement download logic
         console.log(`Download ${props.selectedItem}`);
-        downloadFile(props.currentPath, props.selectedItem!).then(
+        downloadFile(props.currentPath, props.selectedItem!.replace(":dir:", "")).then(
             () => {
                 handleCloseContextMenu();
                 props.setUploadFinishedFlag(!props.uploadFinishedFlag);

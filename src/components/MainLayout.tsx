@@ -163,7 +163,16 @@ export default function GoogleDriveApp() {
 
     const handleContextMenu = (event: React.MouseEvent, itemName: string) => {
         event.preventDefault(); // Prevent the default right-click menu
-        setSelectedItem(itemName);
+        // Check if the event target is a directory or file
+        const targetElement = event.target as HTMLElement;
+        const itemElement = targetElement.closest('[data-item-type]');
+        const itemType = itemElement?.getAttribute('data-item-type');
+
+        // Only proceed if the context menu is triggered on valid items
+        // TODO: add special item type for here
+        if (itemType !== 'directory' && itemType !== 'file') return;
+        const isDir = itemType === 'directory' ? ":dir:" : "";
+        setSelectedItem(itemName + isDir);
         setContextMenu({
             mouseX: event.clientX - 2,
             mouseY: event.clientY - 4,

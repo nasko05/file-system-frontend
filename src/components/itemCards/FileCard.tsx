@@ -11,6 +11,7 @@ export default function FileCard({ file, handleContextMenu }: FileCardProps) {
     return (
         <Grid item xs={12} sm={6} md={4} key={file}>
             <Card
+                data-item-type="file"
                 variant="outlined"
                 sx={{
                     height: 150,

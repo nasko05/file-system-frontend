@@ -13,6 +13,7 @@ export default function DirectoryCard({ directory, openFolder, handleContextMenu
     return (
         <Grid item xs={12} sm={6} md={4} key={directory.name}>
         <Card
+            data-item-type="directory"
             variant="outlined"
             sx={{
                 height: 150,

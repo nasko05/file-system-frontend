@@ -105,9 +105,32 @@ async function downloadFile(path: string, filename: string): Promise<void> {
 
 const deleteFile = async (path: string, name: string): Promise<void> => {
     const bearerToken = localStorage.getItem("bearerToken");
-
+    console.log(path, " ", name);
     const result = await axiosInstance.post(
         `/api/file/delete`,
+        {
+            path: path,
+            name: name,
+        },
+        {
+            headers: { Authorization: `Bearer ${bearerToken}` },
+        }
+    );
+
+    console.log(result.status);
+
+    if(result.status === 401) {
+        throw new Error("Unauthorized");
+    } else if (result.status !== 200) {
+        throw new Error("Deleting file failed!\nReturn code is " + result.statusText + "\n Error message: " + result.statusText);
+    }
+}
+
+const deleteDirectory = async (path: string, name: string): Promise<void> => {
+    const bearerToken = localStorage.getItem("bearerToken");
+    console.log(path, " ", name);
+    const result = await axiosInstance.post(
+        `/api/directory/delete`,
         {
             path: path,
             name: name,
@@ -154,4 +177,4 @@ const renameFile = async (
     }
 }
 
-export {fetchDriveStructure, uploadFile, downloadFile, deleteFile, renameFile};
+export {fetchDriveStructure, uploadFile, downloadFile, deleteFile, renameFile, deleteDirectory};
