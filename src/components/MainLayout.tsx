@@ -13,9 +13,9 @@ import AppToolBar from "./toolBars/AppToolBar.tsx";
 import FileCard from "./itemCards/FileCard.tsx";
 import DirectoryCard from "./itemCards/DirectoryCard.tsx";
 import NavigationBar from "./toolBars/NavigationBar.tsx";
-import ContextMenu from "./ContextMenu.tsx";
-import SimplePopup from "./RenamePopup.tsx";
-import LogInForm from "./LogInForm.tsx";
+import ContextMenu from "./popups/ContextMenu.tsx";
+import SimplePopup from "./popups/RenamePopup.tsx";
+import LogInForm from "./forms/LogInForm.tsx";
 
 // Helper function to find a subdirectory by name
 function findSubdirectory(current: DriveStructure, name: string): DriveStructure | null {
@@ -87,9 +87,7 @@ export default function GoogleDriveApp() {
     useEffect(() => {
         if (!loggedIn) return;
 
-        const user = localStorage.getItem("username");
-        if(!user) throw new Error("Could not retrieve user from local storage!");
-        fetchDriveStructure(user)
+        fetchDriveStructure()
             .then((r) => {
                 const resultJson = r as DriveStructure;
                 setRootStructure(resultJson);
@@ -223,7 +221,14 @@ export default function GoogleDriveApp() {
                     ) : (
                         <>
                             {/* Navigation Bar */}
-                            <NavigationBar pathStack={pathStack} currentStructure={currentStructure} goBack={goBack}/>
+                            <NavigationBar
+                                pathStack={pathStack}
+                                currentStructure={currentStructure}
+                                goBack={goBack}
+                                currentPath={currentPath}
+                                uploadFinishedFlag={uploadFinishedFlag}
+                                setUploadFinishedFlag={setUploadFinishedFlag}
+                            />
 
                             <Grid container spacing={3}>
                                 {/* Sub-directories */}

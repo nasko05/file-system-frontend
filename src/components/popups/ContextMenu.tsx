@@ -1,6 +1,6 @@
 import {Menu, MenuItem} from "@mui/material";
 import React from "react";
-import {deleteDirectory, deleteFile, downloadFile} from "../logic/structure_requests.ts";
+import {deleteDirectory, deleteFile, downloadFile} from "../../logic/structure_requests.ts";
 
 type ContextMenuProps = {
     selectedItem: string | null;

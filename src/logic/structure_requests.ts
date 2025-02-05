@@ -1,11 +1,14 @@
 import {axiosInstance} from "./clientSetup.ts";
 import {AxiosError} from "axios";
 
-const fetchDriveStructure = async (username: string) => {
+const fetchDriveStructure = async () => {
     const bearerToken = localStorage.getItem("bearerToken");
 
-    const result = await axiosInstance.get(
-        `/api/directory/${username}`,
+    const result = await axiosInstance.post(
+        `/api/structure`,
+        {
+            "path": ""
+        },
         {
             headers: { Authorization: `Bearer ${bearerToken}` },
         }
@@ -177,4 +180,26 @@ const renameFile = async (
     }
 }
 
-export {fetchDriveStructure, uploadFile, downloadFile, deleteFile, renameFile, deleteDirectory};
+const createDirectory = async (path: string, name: string): Promise<void> => {
+    const bearerToken = localStorage.getItem("bearerToken");
+    const payload = {
+        path: path,
+        name: name,
+    }
+    const result = await axiosInstance.post('/api/directory/create',
+        payload,
+        {
+            headers: { Authorization: `Bearer ${bearerToken}` },
+        })
+
+
+    console.log(result.status);
+
+    if(result.status === 401) {
+        throw new Error("Unauthorized");
+    } else if (result.status !== 200) {
+        throw new Error("Could not create directory file!");
+    }
+}
+
+export {fetchDriveStructure, uploadFile, downloadFile, deleteFile, renameFile, deleteDirectory, createDirectory};

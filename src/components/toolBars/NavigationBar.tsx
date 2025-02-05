@@ -1,25 +1,39 @@
 import {Box, Button, Typography} from "@mui/material";
 import DriveStructure from "../../models/DriveStructure";
+import CreateDirectoryButton from "../buttons/CreateDirectoryButton.tsx";
+import React from "react";
 
 type NavigationBarProps = {
     pathStack: string[];
     currentStructure: DriveStructure;
     goBack: () => void;
+    currentPath: string;
+    uploadFinishedFlag: boolean;
+    setUploadFinishedFlag: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function NavigationBar({pathStack, currentStructure, goBack}: NavigationBarProps) {
+export default function NavigationBar(props: NavigationBarProps) {
     return (
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h5" fontWeight="bold">
-                {pathStack.length === 0
-                    ? `Welcome, ${currentStructure.name}`
-                    : currentStructure.name}
+                {props.pathStack.length === 0
+                    ? `Welcome, ${props.currentStructure.name}`
+                    : props.currentStructure.name}
             </Typography>
-            {pathStack.length > 0 && (
-                <Button variant="outlined" onClick={goBack}>
-                    Back
-                </Button>
-            )}
+            <Box justifySelf="center">
+                <CreateDirectoryButton
+                    currentPath={props.currentPath}
+                    uploadFinishedFlag={props.uploadFinishedFlag}
+                    setUploadFinishedFlag={props.setUploadFinishedFlag}
+                />
+            </Box>
+            <Box justifySelf="end">
+                {props.pathStack.length > 0 && (
+                    <Button variant="outlined" onClick={props.goBack}>
+                        Back
+                    </Button>
+                )}
+            </Box>
         </Box>
     )
 }
