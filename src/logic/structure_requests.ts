@@ -63,7 +63,7 @@ async function downloadFile(path: string, filename: string): Promise<void> {
         const response = await axiosInstance.post('/api/download',
             {
                 path: path,
-                filename: filename,
+                name: filename,
             },
             {
                 responseType: "blob",
