@@ -21,18 +21,18 @@ export default function NavigationBar(props: NavigationBarProps) {
                     : props.currentStructure.name}
             </Typography>
             <Box justifySelf="center">
-                <CreateDirectoryButton
-                    currentPath={props.currentPath}
-                    uploadFinishedFlag={props.uploadFinishedFlag}
-                    setUploadFinishedFlag={props.setUploadFinishedFlag}
-                />
-            </Box>
-            <Box justifySelf="end">
                 {props.pathStack.length > 0 && (
                     <Button variant="outlined" onClick={props.goBack}>
                         Back
                     </Button>
                 )}
+            </Box>
+            <Box justifySelf="end">
+                <CreateDirectoryButton
+                    currentPath={props.currentPath}
+                    uploadFinishedFlag={props.uploadFinishedFlag}
+                    setUploadFinishedFlag={props.setUploadFinishedFlag}
+                />
             </Box>
         </Box>
     )
