@@ -106,6 +106,50 @@ async function downloadFile(path: string, filename: string): Promise<void> {
     }
 }
 
+async function downloadDirectory(path: string, directoryName: string): Promise<void> {
+    try {
+        const bearerToken = localStorage.getItem("bearerToken");
+
+        // Make the POST request to download the directory as a zip blob
+        const response = await axiosInstance.post(
+            "/api/download/directory",
+            { path, name: directoryName },
+            {
+                responseType: "blob", // Important to receive binary data
+                headers: {
+                    Authorization: `Bearer ${bearerToken}`,
+                    "Content-Type": "application/json"
+                },
+            }
+        );
+
+        // Convert the response data into a blob and create an object URL
+        const blob = new Blob([response.data], { type: "application/zip" });
+        const url = window.URL.createObjectURL(blob);
+
+        // Create an anchor element to trigger the download
+        const link = document.createElement("a");
+        link.href = url;
+        // You can append ".zip" if you want the downloaded file to have a .zip extension:
+        link.setAttribute("download", directoryName + ".zip");
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+            console.error(`Error ${error.response.status}: ${error.response.data}`);
+        } else if (error instanceof Error) {
+            console.error(`Error: ${error.message}`);
+        } else {
+            console.error("An unknown error occurred");
+        }
+    }
+}
+
 const deleteFile = async (path: string, name: string): Promise<void> => {
     const bearerToken = localStorage.getItem("bearerToken");
     console.log(path, " ", name);
@@ -202,4 +246,4 @@ const createDirectory = async (path: string, name: string): Promise<void> => {
     }
 }
 
-export {fetchDriveStructure, uploadFile, downloadFile, deleteFile, renameFile, deleteDirectory, createDirectory};
+export {downloadDirectory, fetchDriveStructure, uploadFile, downloadFile, deleteFile, renameFile, deleteDirectory, createDirectory};

@@ -1,6 +1,6 @@
 import {Menu, MenuItem} from "@mui/material";
 import React from "react";
-import {deleteDirectory, deleteFile, downloadFile} from "../../logic/structure_requests.ts";
+import {deleteDirectory, deleteFile, downloadDirectory, downloadFile} from "../../logic/structure_requests.ts";
 
 type ContextMenuProps = {
     selectedItem: string | null;
@@ -51,12 +51,21 @@ export default function ContextMenu(props: ContextMenuProps) {
     const handleDownload = () => {
         // Implement download logic
         console.log(`Download ${props.selectedItem}`);
-        downloadFile(props.currentPath, props.selectedItem!.replace(":dir:", "")).then(
-            () => {
-                handleCloseContextMenu();
-                props.setUploadFinishedFlag(!props.uploadFinishedFlag);
-            }
-        ).catch(console.error);
+        if(props.selectedItem?.endsWith(":dir:")) {
+            downloadDirectory(props.currentPath, props.selectedItem!.replace(":dir:", "")).then(
+                () => {
+                    handleCloseContextMenu();
+                    props.setUploadFinishedFlag(!props.uploadFinishedFlag);
+                }
+            ).catch(console.error);
+        } else {
+            downloadFile(props.currentPath, props.selectedItem!.replace(":dir:", "")).then(
+                () => {
+                    handleCloseContextMenu();
+                    props.setUploadFinishedFlag(!props.uploadFinishedFlag);
+                }
+            ).catch(console.error);
+        }
     };
 
     return (
